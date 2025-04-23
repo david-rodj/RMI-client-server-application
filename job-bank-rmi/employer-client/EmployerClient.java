@@ -1,3 +1,6 @@
+import common.JobOffer;
+import common.Application;
+import common.JobService;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
