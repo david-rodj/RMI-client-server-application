@@ -4,6 +4,8 @@ import common.JobService;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EmployerClient {
     public static void main(String[] args) {
@@ -26,10 +28,23 @@ public class EmployerClient {
             String response = service.registerJobOffer(offer);
             System.out.println(response);
 
-            // Consultar postulaciones
-            System.out.println("\nPostulaciones recibidas:");
-            service.getApplications(empId).forEach(app -> 
-                System.out.println(app.getApplicantName() + " - " + app.getEmail())
+             // Consultar postulaciones
+            System.out.println("\nPostulaciones recibidas:\n");
+
+            List<Application> lastApps = new ArrayList<>();
+
+            while(true){
+                Thread.sleep(2000);
+                List<Application> newApps = service.getApplications(empId);
+                
+                if (!newApps.equals(lastApps)) {
+                    newApps.forEach(app -> 
+                        System.out.println(app.getApplicantName() + " - " + app.getEmail())
+                    );
+                    lastApps = newApps;
+                    System.out.println();
+                }
+            }
             );
         } catch (Exception e) {
             e.printStackTrace();
