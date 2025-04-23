@@ -1,3 +1,4 @@
+import common.JobService;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 
