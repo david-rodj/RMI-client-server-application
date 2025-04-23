@@ -25,18 +25,29 @@ public class JobServiceImpl extends UnicastRemoteObject implements JobService {
         } catch (IOException e) {
             System.err.println("Error guardando vacantes: " + e.getMessage());
         }
-        // Guardar aplicaciones de manera similar
+        
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(APPS_FILE))) {
+            oos.writeObject(applications);
+        } catch (IOException e) {
+            System.err.println("Error guardando aplicaciones: " + e.getMessage());
+        }
     }
-
-    // Cargar datos al iniciar
+    
     private void loadData() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(JOBS_FILE))) {
             jobOffers = (List<JobOffer>) ois.readObject();
         } catch (Exception e) {
             System.out.println("No se encontraron vacantes previas.");
+            jobOffers = new ArrayList<>();
         }
-        // Cargar aplicaciones de manera similar
-    }
+        
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(APPS_FILE))) {
+            applications = (List<Application>) ois.readObject();
+        } catch (Exception e) {
+            System.out.println("No se encontraron aplicaciones previas.");
+            applications = new ArrayList<>();
+        }
+}
 
     @Override
     public String registerJobOffer(JobOffer offer) throws RemoteException {
@@ -61,8 +72,14 @@ public class JobServiceImpl extends UnicastRemoteObject implements JobService {
     public List<Application> getApplications(String employerId) throws RemoteException {
         List<Application> result = new ArrayList<>();
         for (Application app : applications) {
-            // Filtrar por empleador (requiere lógica adicional)
-            result.add(app);
+            // Buscar la oferta de trabajo asociada
+            for (JobOffer offer : jobOffers) {
+                if (offer.getJobId().equals(app.getJobId()) && 
+                    offer.getEmployerId().equals(employerId)) {
+                    result.add(app);
+                    break;
+                }
+            }
         }
         return result;
     }
