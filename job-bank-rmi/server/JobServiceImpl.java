@@ -1,3 +1,6 @@
+import common.JobOffer;
+import common.Application;
+import common.JobService;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
